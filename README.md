@@ -47,7 +47,7 @@ docker run --name no-ip \
 -e "NOIP_PASS=<<Password>>" \
 -e "NOIP_DOMAINS=<<Comma delimited domains/groups>>" \
 -e "NOIP_INTERVAL=<<Interval (30m for example, min 5m)>>" \
-lroe/no-ip:latest
+lroe/no-ip:1.0
 ```
 Just replace the placeholder for the environment variables and it should function as is.
 

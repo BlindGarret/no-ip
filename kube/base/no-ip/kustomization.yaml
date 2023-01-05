@@ -1,2 +1,8 @@
+namespace: no-ip
 resources:
 - deployment.yaml
+secretGenerator:
+- name: no-ip-secret
+  literals:
+  - password=APasswordWhichShouldDefinitelyBeReplaced
+  type: Opaque

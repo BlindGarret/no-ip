@@ -14,9 +14,9 @@ do
     #Inner loop checks for life
     while true
     do 
-        output=$(/app/noip2-x86_64 -c $CONFIG_FILE -S 2>&1)
-        
-        if [[ "$output" != *"1 noip2-x86_64 process active"* ]]; then
+        o=$(/app/noip2-x86_64 -c $CONFIG_FILE -S 2>&1)
+        echo $o
+        if [[ "$o" != *"started as"* ]]; then
             echo "Process not detected as active. Restarting in 30 seconds..."
             sleep 30 # turns out if you just auto restart you'll get into an ugly infinite loop of restarting
             break

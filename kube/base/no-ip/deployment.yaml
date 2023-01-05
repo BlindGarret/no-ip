@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: no-ip
-          image: lroe/no-ip:1.0
+          image: lroe/no-ip:1.1
           env: 
           - name: NOIP_PASS
             valueFrom:

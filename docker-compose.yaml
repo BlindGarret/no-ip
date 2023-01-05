@@ -1,0 +1,11 @@
+# Use postgres/example user/password credentials
+version: '3.8'
+
+services:
+  no-ip:
+    build: .
+    environment:
+      NOIP_USER: <<Username>>
+      NOIP_PASS: <<Password>>
+      NOIP_DOMAINS: <<Comma delimited domains/groups>>
+      NOIP_INTERVAL: <<Interval (30m for example, min 5m)>>

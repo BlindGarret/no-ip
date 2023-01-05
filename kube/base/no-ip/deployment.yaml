@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-ip
+spec:
+  replicas: 1 # only ever really need 1
+  selector:
+    matchLabels:
+      app: no-ip
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: no-ip
+    spec:
+      containers:
+        - name: no-ip
+          image: blindgarret/no-ip:latest
+          env: 
+          - name: NOIP_PASS
+            valueFrom:
+              secretKeyRef:
+                name: no-ip-secret
+                key: password

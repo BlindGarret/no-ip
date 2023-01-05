@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: no-ip
+spec:
+  template:
+    spec:
+      containers:
+      - name: no-ip
+        env:
+        - name: NOIP_USER
+          value: <<Username>>
+        - name: NOIP_DOMAINS
+          value: <<Comma delimited domains/groups>>
+        - name: NOIP_INTERVAL
+          value: <<Interval (30m for example, min 5m)>>

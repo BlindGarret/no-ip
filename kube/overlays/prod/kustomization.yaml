@@ -1,0 +1,9 @@
+bases:
+- ../../base
+patchesStrategicMerge:
+- env_vars.yaml
+secretGenerator:
+- name: no-ip-secret
+  behavior: replace
+  literals:
+  - password= <<Password>>

@@ -1,0 +1,6 @@
+commonLabels:
+  app: no-ip
+bases:
+- ./no-ip
+resources:
+- namespaces.yaml

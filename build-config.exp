@@ -1,0 +1,92 @@
+#!/usr/bin/expect
+# script for handling interactive communication with the noip client for configuration creation
+
+if {$argc != 5} {
+    send_error "Expected Arguments <usr> <pass> <domains/group> <interval> <configuration file path>\n"
+    exit 1
+}
+
+# Capture params
+set usr [lindex $argv 0]
+set pass [lindex $argv 1]
+set domains [split [lindex $argv 2] ","]
+set interval [lindex $argv 3]
+set config [lindex $argv 4]
+
+# Start prompt
+spawn /app/noip2-x86_64 -C -c $config
+
+# Respond
+expect "Please enter the login/email string for no-ip.com"
+send "$usr\r"
+expect "Please enter the password for user"
+send "$pass\r"
+
+set domains_found 0
+
+expect {
+    eof {
+        exit 1
+    }
+    timeout {
+        send_user "Timed out expecting response\n"
+        exit 1
+    }
+    "No hosts are available for this user" {
+        send_error "No domains found available on the account\n"
+        exit 1
+    }
+    -re "Only one (.*) \\\[(.*)\\\] is registered to this account" {
+        if {[llength $domains] != 1} { # we expected multiple domains
+            send_error "Account returns only a single domain yet multiple were provided to be updated. Aborting...\n"
+            exit 1
+        } elseif {$expect_out(2,string) != [lindex $domains 0]} { # the singular domain we expected doesn't match
+            send_error "Domain provided doesn't match singular available domain. Aborting...\n"
+            exit 1
+        } else { # we should prob keep track of our domain count just for safety
+            incr domains_found
+        }               
+    }
+    "Do you wish to have them all updated?" {
+        send "n" # no thank you, that would be dangerous
+
+        # inner expect to find our matches
+        expect {
+            eof {
+                send_user "Premature EOF reached\n"
+                exit 2
+            }
+            timeout {
+                send_user "Timed out expecting response\n"
+                exit 2
+            }
+
+            -re "Do you wish to have .* \\\[(.*)\\\] updated" {
+                if {[lsearch $domains $expect_out(1,string)] != -1} { # we have a match
+                    send "y"
+                    incr domains_found
+                    exp_continue
+                } else {
+                    send "n"
+                    exp_continue
+                }
+            }
+
+            # we're done here and need to exit back out to outer expect
+            "Nothing selected" { }
+            "Please enter an update interval" { }            
+        }
+    }
+}
+
+if {[llength $domains] != $domains_found} { # safety check so nothing was skipped
+  send_error "[llength $domains] expected domains, with only $domains_found found. Aborting...\n"
+  exit 1
+}
+
+# if we pass the check we just need to send the interval and exit
+send "$interval\r"
+expect "Do you wish to run something at successful update"
+send "n"
+send_user "Done.\n"
+close
